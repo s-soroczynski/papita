@@ -1,14 +1,34 @@
 import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import passport from "passport";
+import { mainRouter } from "./routes";
+import cookieSession from "cookie-session";
+//google auth strategy
+import "./auth/passportGoogle";
+
+dotenv.config();
+
 const app = express();
-const PORT = 3000;
-app.get("/", (req, res) => {
-  res.send("Hello Worl22sssssssssssssssss2d!");
-});
+const PORT = 4000;
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_BASE_URL,
+    credentials: true,
+  })
+);
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: [process.env.SECRET_COOKIE || ""],
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use("/api/v1", mainRouter);
+
 app.listen(PORT, () => {
   console.log(`Express dservssssssser isdss listening at ${PORT}`);
 });
-
-//npm run start:dev
-//sudo docker build . -t eb  - image
-//sudo docker run -p 3000:3000 -v $(pwd):/src/app -it eb bash - container
-//npm run start:dev
